@@ -5,11 +5,68 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
+* {
+  box-sizing: border-box;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+.page-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.reseller-table {
+  width: 100%;
+  background-color: white;
+  border-collapse: collapse;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.reseller-table thead {
+  background-color: #f1f5f9;
+}
+
+.reseller-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #334155;
+  border-bottom: 2px solid #e2e8f0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reseller-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.reseller-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.reseller-table.table-striped tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.reseller-table.table-striped tbody tr:nth-child(even):hover {
+  background-color: #f1f5f9;
+}
+
+.reseller-table.table-bordered {
+  border: 1px solid #e2e8f0;
+}
+
+.reseller-table.table-bordered th,
+.reseller-table.table-bordered td {
+  border-right: 1px solid #e2e8f0;
+}
+
+.reseller-table.table-bordered th:last-child,
+.reseller-table.table-bordered td:last-child {
+  border-right: none;
 }

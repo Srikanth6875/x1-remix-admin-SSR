@@ -19,9 +19,11 @@
     },
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true,
+    "noEmit": false,                 
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true  
   }
 }
