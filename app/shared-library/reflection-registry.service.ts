@@ -85,7 +85,11 @@ class ReflectionService {
         }
 
         try {
-            return await method.apply(instance, args);
+            // Ensure args is always array
+            const safeArgs = Array.isArray(args) ? args : [args];
+            console.log("safeArgs", safeArgs);
+
+            return await method.apply(instance, safeArgs);
         } catch (error: any) {
             console.error(`[Reflection] Error in ${className}.${methodName}():`, error);
             throw error;

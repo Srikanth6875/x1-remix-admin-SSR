@@ -30,12 +30,37 @@ export class DatabaseService {
     async queryWrite(table: string, type: "insert" | "update" | "delete", options: any = {}) {
         let knexBuilder = this.knex(table);
 
-        if (options.where) knexBuilder.where(options.where);
+        if (options.where) {
+            const sanitizedWhere: Record<string, string | number | boolean> = {};
+            Object.entries(options.where).forEach(([key, value]) => {
+                if (value === undefined) return; // skip undefined
+                if (typeof value === "object") {
+                    throw new Error(`Invalid value for where clause: ${key} = ${JSON.stringify(value)}`);
+                }
+                sanitizedWhere[key] = value as string | number | boolean;
+            });
+            knexBuilder = knexBuilder.where(sanitizedWhere);
+        }
+
+
         if (type === "insert") {
-            const [id] = await knexBuilder.insert(options.data);
+            knexBuilder = knexBuilder.insert(options.data);
+            console.log("[Knex SQL]", knexBuilder.toSQL().sql, knexBuilder.toSQL().bindings);
+            const [id] = await knexBuilder;
             return id;
         }
-        if (type === "update") return await knexBuilder.update(options.data);
-        if (type === "delete") return await knexBuilder.del();
+
+        if (type === "update") {
+            knexBuilder = knexBuilder.update(options.data);
+            console.log("[Knex SQL]", knexBuilder.toSQL().sql, knexBuilder.toSQL().bindings);
+            return await knexBuilder;
+        }
+
+        if (type === "delete") {
+            knexBuilder = knexBuilder.del();
+            console.log("[Knex SQL]", knexBuilder.toSQL().sql, knexBuilder.toSQL().bindings);
+            return await knexBuilder;
+        }
     }
+
 }

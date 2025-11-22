@@ -42,11 +42,13 @@ export class ResellerAppService {
 
         return updated ? { success: true, message: "Reseller updated" } : { success: false, message: "Reseller not found" };
     }
-
     async DeleteReseller(id: number) {
         const deleted = await this.db.queryWrite("reseller", "delete", { where: { id } });
-        return deleted ? { success: true, message: "Reseller deleted" } : { success: false, message: "Not found" };
+        return deleted
+            ? { success: true, message: "Reseller deleted" }
+            : { success: false, message: "Not found" };
     }
+
 
     async GetResellerById(id: number): Promise<Reseller | null> {
         const resellers = await this.db.query("reseller", "select", {
