@@ -1,4 +1,4 @@
-import { DatabaseService } from "./DatabaseService.server";
+import { DatabaseService } from "../shared-library/DatabaseService.service";
 export type Reseller = {
     id: number;
     name: string;

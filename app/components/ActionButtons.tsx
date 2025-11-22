@@ -1,5 +1,5 @@
 import { Form } from "react-router";
-import type { Reseller } from "~/services/reseller.service";
+import type { Reseller } from "~/services/ResellerAppService.server";
 
 type Props = {
   reseller: Reseller;

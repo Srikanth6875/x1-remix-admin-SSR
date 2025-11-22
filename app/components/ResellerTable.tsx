@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ResellerModal } from "./ResellerModal";
 import { ActionButtons } from "./ActionButtons";
-import type { Reseller } from "~/services/reseller.service";
+import type { Reseller } from "~/services/ResellerAppService.server";
 
 // import {fs} from 'fs';
 
