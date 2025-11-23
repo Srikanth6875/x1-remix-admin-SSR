@@ -19,17 +19,10 @@ export class AuthService {
     const match = await bcrypt.compare(password, user.u_password_hash);
     if (!match) return null;
 
-    // const roles = await this.db.query('user_role_map as urm', 'select', {
-    //   joins: [{ table: 'roles as r', first: 'urm.urm_r_id', operator: '=', second: 'r.r_id' }],
-    //   where: { 'urm.urm_u_id': user.u_id, 'r.r_status': true },
-    //   select: ['r.r_name', 'r.r_id'],
-    // });
-
     return {
       id: user.u_id,
       username: user.u_username,
       email: user.u_email,
-      // roles: roles.map(r => ({ name: r.r_name, id: r.r_id })),
     };
   }
 
@@ -84,7 +77,7 @@ export class AuthService {
 
     return {
       class_Name: app_type[0].a_default_class,
-      class_Method_Name: app_type[0].a_default_method || 'defaultMethod',
+      class_Method_Name: app_type[0].a_default_method,
     };
   }
 }

@@ -1,7 +1,7 @@
 import { useLoaderData, redirect } from "react-router";
 import type { LoaderFunction, ActionFunction } from "react-router";
 import { ResellerAppService, type Reseller } from "~/services/ResellerAppService.server";
-import { ResellerTable } from "~/components/ResellerTable";
+import { ResellerTable } from "~/static-approach-com-bkp/ResellerTable";
 import { requireUserSession } from "~/utils/session.service";
 
 export const loader: LoaderFunction = async ({ request }) => {

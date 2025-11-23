@@ -1,66 +1,35 @@
-// import { Form } from "react-router";
-// import type { Reseller } from "~/services/ResellerAppService.server";
-
-// type Props = {
-//   reseller: Reseller;
-//   onEdit: () => void;
-// };
-
-// export const ActionButtons = ({ reseller, onEdit }: Props) => {
-//   return (
-//     <div className="flex gap-2">
-//       <button type="button" onClick={onEdit}
-//         className="px-2 py-1 bg-blue-400 text-white rounded hover:bg-blue-500">
-//         Edit
-//       </button>
-
-//       <Form method="post">
-//         <input type="hidden" name="_method" value="delete" />
-//         <input type="hidden" name="id" value={reseller.id} />
-//         <button type="submit"
-//           className="px-2 py-1 bg-red-400 text-white rounded hover:bg-red-500"
-//           onClick={(e) => !confirm("Are you sure?") && e.preventDefault()}>
-//           Delete
-//         </button>
-//       </Form>
-//     </div>
-//   );
-// };
-
-
-import { Form } from "react-router";
 import type { Reseller } from "~/services/ResellerAppService.server";
 
-export const ActionButtons = ({ reseller, onEdit }: { reseller: Reseller; onEdit: () => void }) => {
+type Props = {
+  reseller: Reseller;
+  onEdit: () => void;
+};
+
+export const ActionButtons = ({ reseller, onEdit }: Props) => {
+  const handleDelete = () => {
+    if (confirm("Delete this reseller permanently?")) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("app_type", "RESELLER");
+      url.searchParams.set("run_type", "DELETE_RESELLER");
+      url.searchParams.set("id", String(reseller.id));
+      window.location.href = url.toString();
+    }
+  };
+
   return (
     <div className="flex gap-2">
       <button
         onClick={onEdit}
-        className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+        className="px-3 py-1 text-xs bg-gradient-to-r from-indigo-400 to-purple-500 text-white rounded-lg hover:from-indigo-500 hover:to-purple-600 transition duration-200 shadow-sm hover:shadow"
       >
         Edit
       </button>
-
-      <Form
-        method="post"
-        onSubmit={(e) => {
-          if (!confirm("Delete this reseller permanently?")) {
-            e.preventDefault();
-            return false;
-          }
-        }}
+      <button
+        onClick={handleDelete}
+        className="px-3 py-1 text-xs bg-gradient-to-r from-pink-400 to-rose-500 text-white rounded-lg hover:from-pink-500 hover:to-rose-600 transition duration-200 shadow-sm hover:shadow"
       >
-        <input type="hidden" name="app_type" value="RESELLER" />
-        <input type="hidden" name="run_type" value="DELETE_RESELLER" />
-        <input type="hidden" name="id" value={reseller.id} />
-        
-        <button
-          type="submit"
-          className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
-        >
-          Delete
-        </button>
-      </Form>
+        Delete
+      </button>
     </div>
   );
 };
