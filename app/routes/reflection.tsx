@@ -8,13 +8,7 @@ import { AuthService } from "~/user-auth/AuthService.service";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireUserSession(request);
-
-  const url = new URL(request.url);
-  const app_type = url.searchParams.get("app_type");
-  const run_type = url.searchParams.get("run_type") || "GET_RESELLER";
-  const id = url.searchParams.get("id");
-  const editId = url.searchParams.get("editId");
-
+  const { app_type, run_type, id, editId } = getQueryParams(request);
   if (!app_type) throw new Response("Bad Request", { status: 400 });
 
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
@@ -25,23 +19,14 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (run_type === "DELETE_RESELLER" && id) {
     const permission = await auth.checkUserPermission(userId, app_type, run_type);
     if (!permission) throw new Response("Forbidden", { status: 403 });
-
     await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, [Number(id)]);
-
-    // Clean URL + reload fresh list
     throw redirect("?app_type=RESELLER&run_type=GET_RESELLER");
   }
 
-  // Always load fresh list
-  const permission = await auth.checkUserPermission(userId, app_type, "GET_RESELLER");
+  const permission = await auth.checkUserPermission(userId, app_type, run_type!);
   if (!permission) throw new Response("Forbidden", { status: 403 });
 
-  const data = await ReflectionRegistry.executeReflectionEngine(
-    permission.class_Name,
-    permission.class_Method_Name,
-    []
-  );
-
+  const data = await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, []);
   return {
     resellers: data as Reseller[],
     editId: editId ? Number(editId) : null,
@@ -80,15 +65,20 @@ export const action: ActionFunction = async ({ request }) => {
   });
 
   await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, [data]);
-
-  // Always redirect to clean list URL → forces fresh loader
   return redirect("?app_type=RESELLER&run_type=GET_RESELLER");
 };
 
+function getQueryParams(request: Request) {
+  const url = new URL(request.url);
+  return {
+    app_type: url.searchParams.get("app_type"),
+    run_type: url.searchParams.get("run_type"),
+    id: url.searchParams.get("id"),
+    editId: url.searchParams.get("editId"),
+  };
+}
+
 export default function ResellersPage() {
   const { resellers } = useLoaderData<{ resellers: Reseller[]; editId: number | null }>();
-
-  return (
-    <ResellerTable initialData={resellers} />
-  );
+  return <ResellerTable initialData={resellers} />;
 }

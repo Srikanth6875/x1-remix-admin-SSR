@@ -1,5 +1,4 @@
 import { reflectionRegistryClasses } from "../services/Index.server";
-
 type AnyClass = new (...args: any[]) => any;
 
 class ReflectionService {
@@ -28,10 +27,9 @@ class ReflectionService {
     }
 
     private registerClass(target: unknown) {
-
         if (!this.checkIsClass(target)) {
             const name = (target as any)?.name || String(target);
-            // console.warn(`[Reflection] Ignored — not a class: ${name}`);
+            console.warn(`[Reflection] Ignored — not a class: ${name}`);
             return;
         }
 
@@ -45,7 +43,6 @@ class ReflectionService {
             console.warn(`[Reflection] Duplicate class "${className}" — skipped`);
             return;
         }
-
         this.dynamicReflectionClasses.set(className, target);
         // console.log("@@@@@@@@@@@@@@@@@@@",this.dynamicReflectionClasses);
     }
@@ -73,20 +70,18 @@ class ReflectionService {
         }
     }
 
-    async executeReflectionEngine<T = any>(className: string, methodName: string, args: any[] = []): Promise<T | null> {
+    async executeReflectionEngine<T = any>(className: string, methodName: string, args: any[] = [],): Promise<T | null> {
         const instance = this.getClassInstance(className);
         if (!instance) return null;
 
         const method = (instance as any)[methodName];
-
         if (typeof method !== "function") {
             console.warn(`[Reflection] Method "${methodName}" not found on ${className}`);
             return null;
         }
 
         try {
-            // Ensure args is always array
-            const safeArgs = Array.isArray(args) ? args : [args];
+            const safeArgs = Array.isArray(args) ? args : [args];// Ensure args is always array
             console.log("safeArgs", safeArgs);
 
             return await method.apply(instance, safeArgs);
@@ -113,10 +108,10 @@ class ReflectionService {
         console.log("[Reflection] All singleton instances cleared");
     }
 
-    reset() {
-        this.dynamicReflectionClasses.clear();
-        this.instanceCache.clear();
-        this.registerAll();
+    async resetReflectionSession() {
+        await this.dynamicReflectionClasses.clear();
+        await this.instanceCache.clear();
+        await this.registerAll();
         console.log("[Reflection] Registry reset and re-registered classes");
     }
 }
@@ -126,8 +121,7 @@ declare global {
     var __ReflectionRegistry__: ReflectionService | undefined;
 }
 
-export const ReflectionRegistry =
-    global.__ReflectionRegistry__ ?? new ReflectionService();
+export const ReflectionRegistry = global.__ReflectionRegistry__ ?? new ReflectionService();
 
 if (!global.__ReflectionRegistry__) {
     global.__ReflectionRegistry__ = ReflectionRegistry;

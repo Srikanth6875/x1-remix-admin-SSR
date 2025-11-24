@@ -26,9 +26,9 @@ export class AuthService {
     };
   }
 
-
   async checkUserPermission(userId: number, appType: string, runType?: string) {
     const roleIds = await this.getUserRoleIds(userId);
+    
     if (runType) {
       return await this.getRunTypePermission(roleIds, appType, runType);
     }

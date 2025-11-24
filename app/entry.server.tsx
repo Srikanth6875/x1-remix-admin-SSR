@@ -3,16 +3,11 @@ import { renderToPipeableStream } from "react-dom/server";
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { PassThrough } from "node:stream";
 import type { EntryContext } from "react-router";
-
 import "./shared-library/reflection-registry.service";
 
-export default function handleRequest(
-  request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  routerContext: EntryContext,
-) {
+export default function handleRequest(request: Request, responseStatusCode: number, responseHeaders: Headers, routerContext: EntryContext,) {
   return new Promise<Response>((resolve, reject) => {
+
     const { pipe, abort } = renderToPipeableStream(
       <ServerRouter context={routerContext} url={request.url} />,
       {
@@ -22,13 +17,7 @@ export default function handleRequest(
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
 
-          resolve(
-            new Response(stream, {
-              status: responseStatusCode,
-              headers: responseHeaders,
-            })
-          );
-
+          resolve(new Response(stream, { status: responseStatusCode, headers: responseHeaders, }));
           pipe(body);
         },
         onError(error) {
@@ -36,7 +25,6 @@ export default function handleRequest(
         },
       }
     );
-
-    setTimeout(abort, 5000);
+    setTimeout(abort, 10000);
   });
 }

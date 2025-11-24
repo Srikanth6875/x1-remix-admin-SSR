@@ -1,5 +1,5 @@
 import { createCookieSessionStorage, redirect } from "react-router";
-const SESSION_TIMEOUT_MS = 60 * 60 * 1000; 
+const SESSION_TIMEOUT_MS = 60 * 60 * 1000; //10 minutes
 
 export const sessionStorage = createCookieSessionStorage({
     cookie: {
@@ -21,8 +21,12 @@ export async function getSession(request: Request) {
 export async function createUserSession(userId: number, redirectTo: string) {
     const session = await sessionStorage.getSession();
     session.set("userId", userId);
-    session.set("lastActivity", Date.now()); // track first activity
-
+    session.set("lastActivity", Date.now());
+    /*
+    Takes the session object (userId, lastActivity)
+    Converts it into JSON
+    Encrypts / signs it using the secret:
+    */
     return redirect(redirectTo, {
         headers: {
             "Set-Cookie": await sessionStorage.commitSession(session),
@@ -40,7 +44,7 @@ export async function requireUserSession(request: Request) {
     // Not logged in at all
     if (!userId) throw redirect("/login");
 
-    // If no activity for 2 min → kill session
+    // If no activity for 10 min → kill session
     if (lastActivity && now - lastActivity > SESSION_TIMEOUT_MS) {
         throw redirect("/login", {
             headers: {

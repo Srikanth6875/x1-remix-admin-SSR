@@ -39,7 +39,6 @@ export class ResellerAppService {
             where: { id: data.id },
             data: { ...data, updatedAt: new Date() },
         });
-
         return updated ? { success: true, message: "Reseller updated" } : { success: false, message: "Reseller not found" };
     }
 

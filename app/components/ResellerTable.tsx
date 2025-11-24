@@ -13,7 +13,7 @@ export const ResellerTable = ({ initialData }: Props) => {
 
   // Read from URL
   const action = searchParams.get("action"); // "add" or null
-  const editId = searchParams.get("editId"); // "5" or null
+  const editId = searchParams.get("editId");
   const resellerToEdit = editId ? initialData.find(r => r.id === Number(editId)) : null;
 
   const showModal = action === "add" || !!resellerToEdit;
@@ -92,9 +92,7 @@ export const ResellerTable = ({ initialData }: Props) => {
                 <td className="px-4 py-3 text-sm">{r.companyName || "-"}</td>
                 <td className="px-4 py-3 text-sm">{r.resellerType}</td>
                 <td className="px-4 py-3 text-sm">
-                  <span className={`px-2 py-1 text-xs rounded-full ${r.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                    {r.status}
-                  </span>
+                  <span className={`px-2 py-1 text-xs rounded-full ${r.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}> {r.status}</span>
                 </td>
                 <td className="px-4 py-3 text-sm">
                   <ActionButtons reseller={r} onEdit={() => openEditModal(r.id)} />
