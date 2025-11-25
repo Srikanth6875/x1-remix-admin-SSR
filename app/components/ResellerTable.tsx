@@ -11,11 +11,9 @@ type Props = {
 export const ResellerTable = ({ initialData }: Props) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Read from URL
   const action = searchParams.get("action");
   const editId = searchParams.get("editId");
   const resellerToEdit = editId ? initialData.find(r => r.id === Number(editId)) : null;
-
   const showModal = action === "add" || !!resellerToEdit;
 
   const openAddModal = () => {
@@ -42,7 +40,7 @@ export const ResellerTable = ({ initialData }: Props) => {
     });
   };
 
-  // Optional: Sync scroll or focus when modal opens
+  // Sync scroll or focus when modal opens
   useEffect(() => {
     if (showModal) {
       document.body.style.overflow = "hidden";
@@ -62,12 +60,7 @@ export const ResellerTable = ({ initialData }: Props) => {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <ResellerModal
-          reseller={resellerToEdit}
-          onClose={closeModal}
-        />
-      )}
+      {showModal && (<ResellerModal reseller={resellerToEdit} onClose={closeModal} />)}
 
       {/* Table */}
       <div className="overflow-x-auto">

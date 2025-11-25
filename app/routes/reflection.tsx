@@ -1,4 +1,3 @@
-// routes/resellers.tsx (or .tsx file)
 import { redirect, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { ResellerTable } from "~/components/ResellerTable";
@@ -12,25 +11,18 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireUserSession(request);
 
   const url = new URL(request.url);
-  const app_type = url.searchParams.get("app_type") ?? "RESELLER";
-  const run_type = url.searchParams.get("run_type") ?? "GET_RESELLER";
+  const app_type = url.searchParams.get("app_type");
+  const run_type = url.searchParams.get("run_type");
 
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const userId = session.get("userId");
 
   const auth = new AuthService();
-  const permission = await auth.checkUserPermission(userId, app_type, run_type);
+  const permission = await auth.checkUserPermission(userId, app_type!, run_type!);
   if (!permission) throw new Response("Forbidden", { status: 403 });
+  const data = await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, []);
 
-  const data = await ReflectionRegistry.executeReflectionEngine(
-    permission.class_Name,
-    permission.class_Method_Name,
-    []
-  );
-
-  return {
-    resellers: data as Reseller[],
-  };
+  return { resellers: data as Reseller[] };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -38,26 +30,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const formData = await request.formData();
   const url = new URL(request.url);
-  const app_type = url.searchParams.get("app_type") ?? "RESELLER";
+  const app_type = url.searchParams.get("app_type");
+
   const action_type = formData.get("action_type")?.toString();
-  const run_type = formData.get("run_type")?.toString() ?? "GET_RESELLER";
+  const run_type = formData.get("run_type")?.toString();
 
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const userId = session.get("userId");
   const auth = new AuthService();
 
-  const permission = await auth.checkUserPermission(userId, app_type, run_type);
+  const permission = await auth.checkUserPermission(userId, app_type!, run_type);
   if (!permission) throw new Response("Forbidden", { status: 403 });
 
   if (action_type === "DELETE") {
     const deleteId = formData.get("delete_id");
     if (!deleteId) throw new Response("ID missing", { status: 400 });
 
-    await ReflectionRegistry.executeReflectionEngine(
-      permission.class_Name,
-      permission.class_Method_Name,
-      [Number(deleteId)]
-    );
+    await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, [Number(deleteId)]);
     return redirect("/resellers?app_type=RESELLER&run_type=GET_RESELLER");
   }
 
@@ -76,14 +65,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const val = value.toString().trim();
     data[key] = val === "" || isNaN(Number(val)) ? val : Number(val);
   }
+  await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, [data]);
 
-  await ReflectionRegistry.executeReflectionEngine(
-    permission.class_Name,
-    permission.class_Method_Name,
-    [data]
-  );
-
-  return redirect("/resellers?app_type=RESELLER&run_type=GET_RESELLER");
+  return redirect("/reflection?app_type=RESELLER&run_type=GET_RESELLER");
 };
 
 export default function ResellersPage() {

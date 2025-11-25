@@ -53,6 +53,7 @@ export const ResellerModal = ({ reseller, onClose }: Props) => {
           <button type="button" onClick={onClose} disabled={isSubmitting} className="px-5 py-2 bg-gray-300 rounded-lg">
             Cancel
           </button>
+
           <button type="submit" disabled={isSubmitting} className="px-5 py-2 bg-green-600 text-white rounded-lg disabled:opacity-70">
             {isSubmitting ? "Saving..." : reseller ? "Update" : "Create"}
           </button>
