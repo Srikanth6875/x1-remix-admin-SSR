@@ -52,13 +52,11 @@ export const ResellerTable = ({ initialData }: Props) => {
   }, [showModal]);
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Resellers</h1>
-        <button
-          onClick={openAddModal}
-          className="px-3 py-1.5 bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-lg hover:from-emerald-500 hover:to-teal-600 transition duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-medium"
-        >
+    <div className="p-4 bg-white rounded-lg shadow-lg">
+      <div className="flex justify-between items-center mb-1">
+        <h1 className="text-xl font-bold text-gray-800">Resellers</h1>
+        <button onClick={openAddModal}
+          className="px-2 py-1 bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-lg hover:from-emerald-500 hover:to-teal-600 transition duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-medium">
           Add Reseller
         </button>
       </div>
