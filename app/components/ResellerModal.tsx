@@ -27,6 +27,7 @@ export const ResellerModal = ({ reseller, onClose }: Props) => {
 
       <Form method="post" className="space-y-4">
         <input type="hidden" name="run_type" value={reseller ? "UPDATE_RESELLER" : "ADD_RESELLER"} />
+        <input type="hidden" name="action_type" value={reseller ? "UPDATE" : "ADD"} />
         {reseller && <input type="hidden" name="id" value={reseller.id} />}
 
         <input name="name" defaultValue={reseller?.name} placeholder="Name" required className="w-full px-4 py-2 border rounded-lg" />

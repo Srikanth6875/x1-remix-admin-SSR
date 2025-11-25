@@ -17,6 +17,7 @@ class ReflectionService {
     private autoRegisterExportedClasses() {
         for (const exportKey of Object.keys(serviceFiles)) {
             const exported = (serviceFiles as any)[exportKey];
+            
             this.registerClass(exported);
         }
     }
