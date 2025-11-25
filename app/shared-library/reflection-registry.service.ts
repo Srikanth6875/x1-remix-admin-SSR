@@ -1,4 +1,4 @@
-import { reflectionRegistryClasses } from "../services/Index.server";
+import * as serviceFiles from "../services/Index.server";
 type AnyClass = new (...args: any[]) => any;
 
 class ReflectionService {
@@ -7,92 +7,76 @@ class ReflectionService {
 
     constructor() {
         try {
-            this.registerAll();
+            this.autoRegisterExportedClasses();
         } catch (err) {
-            console.error("[Reflection] Fatal error during registry initialization:", err);
+            console.error("[Reflection] Fatal error during initialization:", err);
         }
     }
 
-    registerAll() {
-        for (const item of reflectionRegistryClasses) {
-            try {
-                this.registerClass(item);
-            } catch (err) {
-                console.error(`[Reflection] Failed to register class "${(item as any)?.name}":`, err);
-            }
+    /* Automatically registers all ES6 class exports from ../services/Index.server */
+    private autoRegisterExportedClasses() {
+        for (const exportKey of Object.keys(serviceFiles)) {
+            const exported = (serviceFiles as any)[exportKey];
+            this.registerClass(exported);
         }
     }
 
     private registerClass(target: unknown) {
-        if (!this.checkIsClass(target)) {
-            const name = (target as any)?.name || String(target);
-            console.warn(`[Reflection] Ignored — not a valid ES6 class: ${name}`);
-            return;
-        }
+        if (!this.isES6Class(target)) return;// ignore non-classes 
 
         const className = (target as AnyClass).name;
-        if (!className) {
-            console.warn("[Reflection] Skipped — unnamed class:", target);
-            return;
-        }
+        if (!className) return;
 
-        if (this.dynamicReflectionClasses.has(className)) {
-            console.warn(`[Reflection] Duplicate class "${className}" — skipped`);
-            return;
-        }
-
+        if (this.dynamicReflectionClasses.has(className)) return;
         this.dynamicReflectionClasses.set(className, target as AnyClass);
-        // console.log(`[Reflection] Registered: ${className}`);
     }
 
-    /**
-     * Detect ONLY ES6 classes.
-     * No fallback for old function-based prototypes.
-     */
-    private checkIsClass(value: unknown): value is AnyClass {
+    private isES6Class(value: unknown): value is AnyClass {
         if (typeof value !== "function") return false;
         const source = Function.prototype.toString.call(value);
-        if (source.includes("=>") || source.startsWith("function (")) return false;
 
-        return /^class[\s{]/.test(source);
+        // Native ES6 class (fast path)
+        if (source.startsWith("class ")) return true;
+
+        // TypeScript-compiled class (prototype-based)
+        const proto = (value as any).prototype;
+        if (proto && Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor === value) {
+            return true;
+        }
+        return false;
     }
 
-    /**
-     * Instance creator with built-in caching (per class).
-     */
+
+    /* Instantiate (singleton cached) */
     getClassInstance<T = any>(name: string): T | null {
         try {
             if (this.instanceCache.has(name)) {
                 return this.instanceCache.get(name);
             }
 
-            const ClassTarget = this.dynamicReflectionClasses.get(name);
-            if (!ClassTarget) {
+            const ClassRef = this.dynamicReflectionClasses.get(name);
+            if (!ClassRef) {
                 console.warn(`[Reflection] Class not registered: ${name}`);
                 return null;
             }
 
-            const instance = new ClassTarget();
+            const instance = new ClassRef();
             this.instanceCache.set(name, instance);
-            // console.log(`[Reflection] Singleton created: ${name}`);
-
             return instance;
         } catch (err: any) {
-            console.error(`[Reflection] Failed to instantiate ${name}:`, err?.message || err);
+            console.error(`[Reflection] Failed to instantiate "${name}":`, err);
             return null;
         }
     }
 
-    /**
-     * Execute a method safely with proper argument handling.
-     */
+    /* Execute a method safely */
     async executeReflectionEngine<T = any>(className: string, methodName: string, args: any[] = []): Promise<T | null> {
         const instance = this.getClassInstance(className);
         if (!instance) return null;
-        const method = (instance as any)[methodName];
 
+        const method = (instance as any)[methodName];
         if (typeof method !== "function") {
-            console.warn(`[Reflection] Method "${methodName}" not found on ${className}`);
+            console.warn(`[Reflection] Method not found: ${className}.${methodName}()`);
             return null;
         }
 
@@ -100,26 +84,19 @@ class ReflectionService {
             const safeArgs = Array.isArray(args) ? args : [args];
             return await method.apply(instance, safeArgs);
         } catch (err: any) {
-            console.error(`[Reflection] Error executing ${className}.${methodName}():`, err?.message || err);
+            console.error(`[Reflection] Error in ${className}.${methodName}()`, err);
             return null;
         }
     }
 
-    /**
-     * List methods declared on a registered class.
-     */
+    /* List instance methods */
     listRegisterClassMethods(className: string): string[] {
-        try {
-            const ClassTarget = this.dynamicReflectionClasses.get(className);
-            if (!ClassTarget?.prototype) return [];
+        const ClassRef = this.dynamicReflectionClasses.get(className);
+        if (!ClassRef) return [];
 
-            return Object.getOwnPropertyNames(ClassTarget.prototype)
-                .filter(m => m !== "constructor")
-                .filter(m => typeof (ClassTarget.prototype as any)[m] === "function");
-        } catch (err) {
-            console.error(`[Reflection] Failed to inspect class ${className}`, err);
-            return [];
-        }
+        return Object.getOwnPropertyNames(ClassRef.prototype)
+            .filter(m => m !== "constructor")
+            .filter(m => typeof (ClassRef.prototype as any)[m] === "function");
     }
 
     listClasses(): string[] {
@@ -134,17 +111,12 @@ class ReflectionService {
     resetReflectionSession() {
         this.dynamicReflectionClasses.clear();
         this.instanceCache.clear();
-
-        try {
-            this.registerAll();
-            console.log("[Reflection] Reinitialized registry");
-        } catch (err) {
-            console.error("[Reflection] Error reinitializing registry:", err);
-        }
+        this.autoRegisterExportedClasses();
+        console.log("[Reflection] Reinitialized registry");
     }
 }
 
-// ------------------ GLOBAL SINGLETON (For HMR) ------------------
+// ---------- GLOBAL SINGLETON (HMR) ----------
 declare global {
     var __ReflectionRegistry__: ReflectionService | undefined;
 }
@@ -156,4 +128,31 @@ if (!global.__ReflectionRegistry__) {
     global.__ReflectionRegistry__ = ReflectionRegistry;
 }
 
-console.log("[Reflection Classes Registered]", ReflectionRegistry.listClasses());
+console.log("[Reflection] Registered Classes:", ReflectionRegistry.listClasses());
+
+
+/*
+  Include inherited parent methods
+
+  listRegisterClassMethods(className: string): string[] {
+    const ClassRef = this.dynamicReflectionClasses.get(className);
+    if (!ClassRef) return [];
+
+    let proto = ClassRef.prototype;
+    const methods = new Set<string>();
+
+    while (proto && proto !== Object.prototype) {
+        for (const name of Object.getOwnPropertyNames(proto)) {
+            if (
+                name !== "constructor" &&
+                typeof proto[name] === "function"
+            ) {
+                methods.add(name);
+            }
+        }
+
+        proto = Object.getPrototypeOf(proto);
+    }
+    return [...methods];
+}
+  */

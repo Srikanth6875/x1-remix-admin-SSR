@@ -8,7 +8,7 @@ import { AuthService } from "~/user-auth/AuthService.service";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireUserSession(request);
-  const { app_type, run_type, id, editId } = getQueryParams(request);
+  const { app_type, run_type, delete_id, editId } = getQueryParams(request);
   if (!app_type) throw new Response("Bad Request", { status: 400 });
 
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
@@ -16,10 +16,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   const auth = new AuthService();
 
   // Handle DELETE via URL
-  if (run_type === "DELETE_RESELLER" && id) {
-    const permission = await auth.checkUserPermission(userId, app_type, run_type);
+  if (delete_id) {
+    const permission = await auth.checkUserPermission(userId, app_type, run_type!);
     if (!permission) throw new Response("Forbidden", { status: 403 });
-    await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, [Number(id)]);
+    await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, [Number(delete_id)]);
     throw redirect("?app_type=RESELLER&run_type=GET_RESELLER");
   }
 
@@ -63,6 +63,8 @@ export const action: ActionFunction = async ({ request }) => {
       data[key] = isNaN(Number(val)) || val === "" ? val : Number(val);
     }
   });
+  console.log("formData", formData);
+  console.log("@@@@@@@@@@@@@@@", data);
 
   await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, [data]);
   return redirect("?app_type=RESELLER&run_type=GET_RESELLER");
@@ -73,7 +75,7 @@ function getQueryParams(request: Request) {
   return {
     app_type: url.searchParams.get("app_type"),
     run_type: url.searchParams.get("run_type"),
-    id: url.searchParams.get("id"),
+    delete_id: url.searchParams.get("delete_id"),
     editId: url.searchParams.get("editId"),
   };
 }

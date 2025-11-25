@@ -12,7 +12,7 @@ export const ResellerTable = ({ initialData }: Props) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Read from URL
-  const action = searchParams.get("action"); // "add" or null
+  const action = searchParams.get("action");
   const editId = searchParams.get("editId");
   const resellerToEdit = editId ? initialData.find(r => r.id === Number(editId)) : null;
 

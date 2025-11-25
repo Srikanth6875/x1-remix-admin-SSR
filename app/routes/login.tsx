@@ -5,7 +5,7 @@ import { createUserSession, getSession } from "~/utils/session.service";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request);
-  if (session.get("userId")) return redirect("/reseller");
+  if (session.get("userId")) return redirect("/reflection?app_type=RESELLER&run_type=GET_RESELLER");
   return null;
 };
 
@@ -21,7 +21,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (!user) {
     return { error: "Invalid email or password" };
   }
-  return createUserSession(user.id, "/reseller");
+  return createUserSession(user.id, "/reflection?app_type=RESELLER&run_type=GET_RESELLER");
 };
 
 export default function Login() {

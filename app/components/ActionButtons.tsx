@@ -11,7 +11,7 @@ export const ActionButtons = ({ reseller, onEdit }: Props) => {
       const url = new URL(window.location.href);
       url.searchParams.set("app_type", "RESELLER");
       url.searchParams.set("run_type", "DELETE_RESELLER");
-      url.searchParams.set("id", String(reseller.id));
+      url.searchParams.set("delete_id", String(reseller.id));
       window.location.href = url.toString();
     }
   };

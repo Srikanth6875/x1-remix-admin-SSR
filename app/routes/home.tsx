@@ -4,5 +4,5 @@ import { requireUserSession } from "~/utils/session.service";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireUserSession(request);
-  return redirect("/reseller");
+  return redirect("/reflection?app_type=RESELLER&run_type=GET_RESELLER");
 };
