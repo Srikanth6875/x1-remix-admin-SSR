@@ -1,5 +1,5 @@
 import { createCookieSessionStorage, redirect } from "react-router";
-const SESSION_TIMEOUT_MS = 60 * 60 * 1000; //10 minutes
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; //30 minutes
 
 export const sessionStorage = createCookieSessionStorage({
     cookie: {

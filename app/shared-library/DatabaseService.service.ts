@@ -42,7 +42,6 @@ export class DatabaseService {
             knexBuilder = knexBuilder.where(sanitizedWhere);
         }
 
-
         if (type === "insert") {
             knexBuilder = knexBuilder.insert(options.data);
             console.log("[Knex SQL]", knexBuilder.toSQL().sql, knexBuilder.toSQL().bindings);
@@ -62,5 +61,4 @@ export class DatabaseService {
             return await knexBuilder;
         }
     }
-
 }

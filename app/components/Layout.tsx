@@ -54,7 +54,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           {/* Hamburger */}
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-gray-600 transition-colors ml-[40px]"
+            className="p-2 rounded-md hover:bg-gray-600 transition-colors ml-[20px]"
           >
             {sidebarOpen ? <Menu className="w-8 h-7" /> : <Menu className="w-8 h-7" />}
           </button>
@@ -87,7 +87,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* SIDEBAR */}
       <aside
-        className={` fixed top-12 left-0 bottom-0 w-64 bg-white shadow-xl z-40 transition-transform duration-300 ease-in-out
+        className={` fixed top-12 left-0 bottom-0 w-60 bg-white shadow-xl z-40 transition-transform duration-300 ease-in-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
 
         <div className="flex flex-col h-full">
@@ -132,7 +132,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       {sidebarOpen && isMobile && (<div className="fixed inset-0 bg-black/50 z-30" onClick={closeSidebar} />)}
 
       {/* MAIN */}
-      <main className={`flex-1 pt-12 transition-all duration-300 ${sidebarOpen ? "md:pl-64" : "md:pl-0"}`}>
+      <main className={`flex-1 pt-10 transition-all duration-300 ${sidebarOpen ? "md:pl-58" : "md:pl-0"}`}>
         <div className="p-6 max-w-7xl mx-auto">
           {children ?? <Outlet />}
         </div>

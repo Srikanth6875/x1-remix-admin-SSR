@@ -1,5 +1,5 @@
 import { useSubmit } from "react-router";
-import type { Reseller } from "~/services/ResellerAppService.server";
+import type { Reseller } from "~/services/ResellerAppService.service";
 
 type Props = {
   reseller: Reseller;

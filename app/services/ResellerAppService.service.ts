@@ -1,4 +1,5 @@
 import { DatabaseService } from "../shared-library/DatabaseService.service";
+
 export type Reseller = {
     id: number;
     name: string;
@@ -12,7 +13,7 @@ export type Reseller = {
 };
 
 export class ResellerAppService {
-    constructor(public db = new DatabaseService()) { }
+    constructor(private db = new DatabaseService()) { }
 
     async ResellerList(): Promise<Reseller[]> {
         const resellers = await this.db.query("reseller", "select", {

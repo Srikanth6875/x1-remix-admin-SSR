@@ -1,4 +1,4 @@
-import * as serviceFiles from "../services/Index.server";
+import * as serviceFiles from "../services/Index.services";
 type AnyClass = new (...args: any[]) => any;
 
 class ReflectionService {
@@ -17,7 +17,6 @@ class ReflectionService {
     private autoRegisterExportedClasses() {
         for (const exportKey of Object.keys(serviceFiles)) {
             const exported = (serviceFiles as any)[exportKey];
-            
             this.registerClass(exported);
         }
     }
@@ -35,7 +34,6 @@ class ReflectionService {
     private isES6Class(value: unknown): value is AnyClass {
         if (typeof value !== "function") return false;
         const source = Function.prototype.toString.call(value);
-
         // Native ES6 class (fast path)
         if (source.startsWith("class ")) return true;
 
@@ -47,7 +45,6 @@ class ReflectionService {
         return false;
     }
 
-
     /* Instantiate (singleton cached) */
     getClassInstance<T = any>(name: string): T | null {
         try {
@@ -56,6 +53,7 @@ class ReflectionService {
             }
 
             const ClassRef = this.dynamicReflectionClasses.get(name);
+
             if (!ClassRef) {
                 console.warn(`[Reflection] Class not registered: ${name}`);
                 return null;
@@ -130,30 +128,3 @@ if (!global.__ReflectionRegistry__) {
 }
 
 console.log("[Reflection] Registered Classes:", ReflectionRegistry.listClasses());
-
-
-/*
-  Include inherited parent methods
-
-  listRegisterClassMethods(className: string): string[] {
-    const ClassRef = this.dynamicReflectionClasses.get(className);
-    if (!ClassRef) return [];
-
-    let proto = ClassRef.prototype;
-    const methods = new Set<string>();
-
-    while (proto && proto !== Object.prototype) {
-        for (const name of Object.getOwnPropertyNames(proto)) {
-            if (
-                name !== "constructor" &&
-                typeof proto[name] === "function"
-            ) {
-                methods.add(name);
-            }
-        }
-
-        proto = Object.getPrototypeOf(proto);
-    }
-    return [...methods];
-}
-  */

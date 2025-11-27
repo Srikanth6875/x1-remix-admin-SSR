@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Form, useNavigation } from "react-router";
 import { Modal } from "./Modal";
-import type { Reseller } from "~/services/ResellerAppService.server";
+import type { Reseller } from "~/services/ResellerAppService.service";
 
 type Props = {
   reseller?: Reseller;

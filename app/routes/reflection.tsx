@@ -1,7 +1,8 @@
+import "reflect-metadata";
 import { redirect, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { ResellerTable } from "~/components/ResellerTable";
-import type { Reseller } from "~/services/ResellerAppService.server";
+import type { Reseller } from "~/services/ResellerAppService.service";
 import { ReflectionRegistry } from "~/shared-library/reflection-registry.service";
 import { requireUserSession, sessionStorage } from "~/utils/session.service";
 import { AuthService } from "~/user-auth/AuthService.service";
@@ -21,7 +22,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const permission = await auth.checkUserPermission(userId, app_type!, run_type!);
   if (!permission) throw new Response("Forbidden", { status: 403 });
   const data = await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, []);
-
+  // console.log("@@@@@@@@@@", data);
   return { resellers: data as Reseller[] };
 };
 
@@ -47,7 +48,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (!deleteId) throw new Response("ID missing", { status: 400 });
 
     await ReflectionRegistry.executeReflectionEngine(permission.class_Name, permission.class_Method_Name, [Number(deleteId)]);
-    return redirect("/resellers?app_type=RESELLER&run_type=GET_RESELLER");
+    return redirect("/reflection?app_type=RESELLER&run_type=GET_RESELLER");
   }
 
   // UPDATE or CREATE

@@ -1,6 +1,6 @@
 import { useLoaderData, redirect } from "react-router";
 import type { LoaderFunction, ActionFunction } from "react-router";
-import { ResellerAppService, type Reseller } from "~/services/ResellerAppService.server";
+import { ResellerAppService, type Reseller } from "~/services/ResellerAppService.service";
 import { ResellerTable } from "~/static-approach-com-bkp/ResellerTable";
 import { requireUserSession } from "~/utils/session.service";
 

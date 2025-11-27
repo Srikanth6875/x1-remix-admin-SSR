@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router";
 import { ResellerModal } from "./ResellerModal";
 import { ActionButtons } from "./ActionButtons";
-import type { Reseller } from "~/services/ResellerAppService.server";
+import type { Reseller } from "~/services/ResellerAppService.service";
 
 type Props = {
   initialData: Reseller[];

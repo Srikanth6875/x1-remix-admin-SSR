@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { ServerRouter } from "react-router";
 import { renderToPipeableStream } from "react-dom/server";
 import { createReadableStreamFromReadable } from "@react-router/node";
@@ -13,7 +14,6 @@ export default function handleRequest(request: Request, responseStatusCode: numb
       {
         onShellReady() {
           responseHeaders.set("Content-Type", "text/html");
-
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
 
