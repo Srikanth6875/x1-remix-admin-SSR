@@ -1,5 +1,5 @@
-import { Form } from "react-router";
-import type { Reseller } from "~/services/reseller.service";
+import { useSubmit } from "react-router";
+import type { Reseller } from "~/services/ResellerAppService.service";
 
 type Props = {
   reseller: Reseller;
@@ -7,22 +7,36 @@ type Props = {
 };
 
 export const ActionButtons = ({ reseller, onEdit }: Props) => {
+  const submit = useSubmit();
+
+  const handleDelete = () => {
+    if (!confirm("Delete this reseller permanently?")) return;
+
+    submit(
+      {
+        app_type: "RESELLER",
+        run_type: "DELETE_RESELLER",
+        action_type: "DELETE",
+        delete_id: String(reseller.id),
+      },
+      { method: "post" }
+    );
+  };
+
   return (
     <div className="flex gap-2">
-      <button type="button" onClick={onEdit}
-        className="px-2 py-1 bg-blue-400 text-white rounded hover:bg-blue-500">
+      <button
+        onClick={onEdit}
+        className="px-3 py-1 text-xs bg-gradient-to-r from-indigo-400 to-purple-500 text-white rounded-lg hover:from-indigo-500 hover:to-purple-600 transition duration-200 shadow-sm hover:shadow"
+      >
         Edit
       </button>
-
-      <Form method="post">
-        <input type="hidden" name="_method" value="delete" />
-        <input type="hidden" name="id" value={reseller.id} />
-        <button type="submit"
-          className="px-2 py-1 bg-red-400 text-white rounded hover:bg-red-500"
-          onClick={(e) => !confirm("Are you sure?") && e.preventDefault()}>
-          Delete
-        </button>
-      </Form>
+      <button
+        onClick={handleDelete}
+        className="px-3 py-1 text-xs bg-gradient-to-r from-pink-400 to-rose-500 text-white rounded-lg hover:from-pink-500 hover:to-rose-600 transition duration-200 shadow-sm hover:shadow"
+      >
+        Delete
+      </button>
     </div>
   );
 };

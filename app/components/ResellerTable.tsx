@@ -1,91 +1,97 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router";
 import { ResellerModal } from "./ResellerModal";
 import { ActionButtons } from "./ActionButtons";
-import type { Reseller } from "~/services/reseller.service";
+import type { Reseller } from "~/services/ResellerAppService.service";
 
-// import {fs} from 'fs';
+type Props = {
+  initialData: Reseller[];
+};
 
-export const ResellerTable = ({ initialData }: { initialData: Reseller[] }) => {
-  const [editingReseller, setEditingReseller] = useState<Reseller | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+export const ResellerTable = ({ initialData }: Props) => {
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [page, setPage] = useState(1);
-  const pageSize = 15;
-  const totalPages = Math.ceil(initialData.length / pageSize);
+  const action = searchParams.get("action");
+  const editId = searchParams.get("editId");
+  const resellerToEdit = editId ? initialData.find(r => r.id === Number(editId)) : null;
+  const showModal = action === "add" || !!resellerToEdit;
 
-  const handleAddClick = () => {
-    setEditingReseller(null);
-    setModalOpen(true);
+  const openAddModal = () => {
+    setSearchParams(prev => {
+      prev.set("action", "add");
+      prev.delete("editId");
+      return prev;
+    });
   };
 
-  const handleEditClick = (reseller: Reseller) => {
-    setEditingReseller(reseller);
-    setModalOpen(true);
+  const openEditModal = (id: number) => {
+    setSearchParams(prev => {
+      prev.set("editId", String(id));
+      prev.delete("action");
+      return prev;
+    });
   };
 
-  const paginatedData = initialData.slice(
-    (page - 1) * pageSize,
-    page * pageSize
-  );
+  const closeModal = () => {
+    setSearchParams(prev => {
+      prev.delete("action");
+      prev.delete("editId");
+      return prev;
+    });
+  };
 
-  const columns = ["id", "name", "email", "companyName", "resellerType", "status", "address", "actions",] as const;
-
-  const formatLabel = (key: string) => key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
+  // Sync scroll or focus when modal opens
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [showModal]);
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between mb-4">
-        <h1 className="text-xl font-bold">Resellers</h1>
-
-        <button
-          onClick={handleAddClick}
-          className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600" >Add Reseller </button>
+    <div className="p-4 bg-white rounded-lg shadow-lg">
+      <div className="flex justify-between items-center mb-1">
+        <h1 className="text-xl font-bold text-gray-800">Resellers</h1>
+        <button onClick={openAddModal}
+          className="px-2 py-1 bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-lg hover:from-emerald-500 hover:to-teal-600 transition duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-medium">
+          Add Reseller
+        </button>
       </div>
 
-      {modalOpen && (<ResellerModal reseller={editingReseller || undefined} onClose={() => setModalOpen(false)} />)}
+      {/* Modal */}
+      {showModal && (<ResellerModal reseller={resellerToEdit} onClose={closeModal} />)}
 
-      <table className="reseller-table table-striped table-bordered w-full">
-        <thead>
-          <tr>
-            {columns.map((col) => (
-              <th key={col}>{formatLabel(col)}</th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          {paginatedData.map((r) => (
-            <tr key={r.id}>
-              {columns.map((col) => (
-                <td key={col}>
-                  {col === "actions" ? (<ActionButtons reseller={r} onEdit={() => handleEditClick(r)} />) : ((r as any)[col])}
-                </td>
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-200">
+          <thead className="bg-gradient-to-r from-gray-100 to-gray-200">
+            <tr>
+              {["ID", "Name", "Email", "Company", "Type", "Status", "Actions"].map((h) => (
+                <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-1000 uppercase tracking-wider border-b border-gray-1000">
+                  {h}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="flex justify-between items-center mt-4">
-        <span className="text-sm text-gray-600"> Page {page} of {totalPages} </span>
-
-        <div className="flex gap-2">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
-          >
-            Prev
-          </button>
-
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {initialData.map((r) => (
+              <tr key={r.id}>
+                <td className="px-4 py-3 text-sm">{r.id}</td>
+                <td className="px-4 py-3 text-sm font-medium">{r.name}</td>
+                <td className="px-4 py-3 text-sm text-gray-600">{r.email}</td>
+                <td className="px-4 py-3 text-sm">{r.companyName || "-"}</td>
+                <td className="px-4 py-3 text-sm">{r.resellerType}</td>
+                <td className="px-4 py-3 text-sm">
+                  <span className={`px-2 py-1 text-xs rounded-full ${r.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}> {r.status}</span>
+                </td>
+                <td className="px-4 py-3 text-sm">
+                  <ActionButtons reseller={r} onEdit={() => openEditModal(r.id)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
