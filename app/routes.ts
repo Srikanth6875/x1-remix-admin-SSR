@@ -8,10 +8,6 @@ export default [
     file: "routes/login.tsx",
   },
   {
-    path: "/reseller",
-    file: "routes/reseller.tsx",
-  },
-  {
     path: "/reflection",
     file: "routes/reflection.tsx",
   },

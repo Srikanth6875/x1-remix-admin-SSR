@@ -44,9 +44,9 @@ class ReflectionService {
     /* Instantiate (singleton cached) */
     getClassInstance<T = any>(name: string): T | null {
         try {
-            // if (this.instanceCache.has(name)) {
-            //     return this.instanceCache.get(name);
-            // }
+            if (this.instanceCache.has(name)) {
+                return this.instanceCache.get(name);
+            }
             const ClassRef = this.dynamicReflectionClasses.get(name);
 
             if (!ClassRef) {
@@ -55,7 +55,7 @@ class ReflectionService {
             }
 
             const instance = new ClassRef();
-            // this.instanceCache.set(name, instance);
+            this.instanceCache.set(name, instance);
             return instance;
         } catch (err: any) {
             console.error(`[Reflection] Failed to instantiate "${name}":`, err);

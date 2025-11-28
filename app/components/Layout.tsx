@@ -14,8 +14,8 @@ const topNavItems = [
 ];
 
 const sidebarItems = [
-  { name: "Active reseller", href: "/Activereseller", icon: Users, },
   { name: "All Clients", href: "/clients", icon: Home, search: { app_type: "CLIENTS", run_type: "GET_CLIENTS" } },
+  { name: "inActive reseller", href: "/inActivereseller", icon: Users, },
 ];
 
 const buildSearch = (search?: Record<string, string>) => search ? `?${new URLSearchParams(search).toString()}` : "";
