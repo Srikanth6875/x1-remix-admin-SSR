@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { redirect, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { ResellerTable } from "~/components/ResellerTable";

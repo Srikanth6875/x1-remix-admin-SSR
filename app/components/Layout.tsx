@@ -14,7 +14,7 @@ const topNavItems = [
 ];
 
 const sidebarItems = [
-  { name: "Resellers", href: "/reseller", icon: Users, },
+  { name: "Active reseller", href: "/Activereseller", icon: Users, },
   { name: "All Clients", href: "/clients", icon: Home, search: { app_type: "CLIENTS", run_type: "GET_CLIENTS" } },
 ];
 

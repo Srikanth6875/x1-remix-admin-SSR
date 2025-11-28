@@ -7,14 +7,14 @@ class ReflectionService {
 
     constructor() {
         try {
-            this.autoRegisterExportedClasses();
+            this.autoRegisterClasses();
         } catch (err) {
             console.error("[Reflection] Fatal error during initialization:", err);
         }
     }
 
     /* Automatically registers all ES6 class exports from ../services/Index.server */
-    private autoRegisterExportedClasses() {
+    private autoRegisterClasses() {
         for (const exportKey of Object.keys(serviceFiles)) {
             const exported = (serviceFiles as any)[exportKey];
             this.registerClass(exported);
@@ -31,27 +31,22 @@ class ReflectionService {
         this.dynamicReflectionClasses.set(className, target as AnyClass);
     }
 
-    private isES6Class(value: unknown): value is AnyClass {
+    isES6Class(value: unknown): boolean {
         if (typeof value !== "function") return false;
-        const source = Function.prototype.toString.call(value);
-        // Native ES6 class (fast path)
-        if (source.startsWith("class ")) return true;
 
-        // TypeScript-compiled class (prototype-based)
+        const str = Function.prototype.toString.call(value);
+        if (str.startsWith("class ")) return true;
+
         const proto = (value as any).prototype;
-        if (proto && Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor === value) {
-            return true;
-        }
-        return false;
+        return !!proto && Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor === value;
     }
 
     /* Instantiate (singleton cached) */
     getClassInstance<T = any>(name: string): T | null {
         try {
-            if (this.instanceCache.has(name)) {
-                return this.instanceCache.get(name);
-            }
-
+            // if (this.instanceCache.has(name)) {
+            //     return this.instanceCache.get(name);
+            // }
             const ClassRef = this.dynamicReflectionClasses.get(name);
 
             if (!ClassRef) {
@@ -60,7 +55,7 @@ class ReflectionService {
             }
 
             const instance = new ClassRef();
-            this.instanceCache.set(name, instance);
+            // this.instanceCache.set(name, instance);
             return instance;
         } catch (err: any) {
             console.error(`[Reflection] Failed to instantiate "${name}":`, err);
@@ -110,7 +105,7 @@ class ReflectionService {
     resetReflectionSession() {
         this.dynamicReflectionClasses.clear();
         this.instanceCache.clear();
-        this.autoRegisterExportedClasses();
+        this.autoRegisterClasses();
         console.log("[Reflection] Reinitialized registry");
     }
 }
