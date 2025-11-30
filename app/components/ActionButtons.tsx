@@ -1,4 +1,4 @@
-import { useSubmit } from "react-router";
+import { useNavigate } from "react-router";
 import type { Reseller } from "~/services/ResellerAppService.service";
 
 type Props = {
@@ -7,19 +7,13 @@ type Props = {
 };
 
 export const ActionButtons = ({ reseller, onEdit }: Props) => {
-  const submit = useSubmit();
+  const navigate = useNavigate();
 
   const handleDelete = () => {
     if (!confirm("Delete this reseller permanently?")) return;
 
-    submit(
-      {
-        app_type: "RESELLER",
-        run_type: "DELETE_RESELLER",
-        action_type: "DELETE",
-        delete_id: String(reseller.id),
-      },
-      { method: "post" }
+    navigate(
+      `/reflection?app_type=RESELLER&run_type=DELETE_RESELLER&delete_id=${reseller.id}`
     );
   };
 
