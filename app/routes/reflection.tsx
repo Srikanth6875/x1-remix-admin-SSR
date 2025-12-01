@@ -7,8 +7,6 @@ import { requireUserSession, sessionStorage } from "~/utils/session.service";
 import { AuthService } from "~/user-auth/AuthService.service";
 import { AppLayout } from "~/components/Layout";
 
-const auth = new AuthService();
-
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireUserSession(request);
   const { app_type, run_type, delete_id } = getParams(request, ["app_type", "run_type", "delete_id",]);
@@ -56,6 +54,7 @@ function getParams(request: Request, keys: string[]) {
 }
 
 async function getUserPermission(request: Request, app_type: string, run_type: string) {
+  const auth = new AuthService();
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const userId = session.get("userId");
 
