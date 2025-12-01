@@ -7,15 +7,15 @@ type AppLayoutProps = {
 };
 
 const topNavItems = [
-  { name: "Reseller", href: "/reflection", search: { app_type: "RESELLER", run_type: "GET_RESELLER" } },
-  { name: "Clients", href: "/clients", search: { app_type: "CLIENTS", run_type: "GET_CLIENTS" } },
-  { name: "Exports", href: "/exports", },
-  { name: "Imports", href: "/imports", },
+  { name: "Reseller", href: "/reflection", search: { app_type: "RESELLER" } },
+  { name: "Clients", href: "/clients", search: { app_type: "CLIENTS" } },
+  { name: "Exports", href: "/exports",  search: { app_type: "EXPORTS" }},
+  { name: "Imports", href: "/imports",  search: { app_type: "IMPORTS" }},
 ];
 
 const sidebarItems = [
-  { name: "All Clients", href: "/clients-List", icon: Home, search: { app_type: "CLIENTS", run_type: "GET_CLIENTS" } },
-  { name: "inActive reseller", href: "/in-Active-reseller", icon: Users, search: { app_type: "RESELLER", run_type: "IN_ACTIVE_RESELLER" }  },
+  { name: "reseller", href: "/reflection", icon: Users, search: { app_type: "RESELLER", run_type: "GET_RESELLER" } },
+  { name: "All Clients", href: "/clients", icon: Home, search: { app_type: "CLIENTS", run_type: "GET_CLIENTS" } },
 ];
 
 const buildSearch = (search?: Record<string, string>) => search ? `?${new URLSearchParams(search).toString()}` : "";

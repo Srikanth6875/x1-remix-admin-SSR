@@ -11,14 +11,11 @@ export type Reseller = {
     updatedAt?: Date;
 };
 
-export class ResellerAppService extends DatabaseService {
-    // constructor(private db = new DatabaseService()) { }
-    constructor() {
-        super()
-    }
-
+export class ResellerAppService {
+    constructor(private db = new DatabaseService()) { }
+    
     async ResellerList(): Promise<Reseller[]> {
-        const resellers = await this.query("reseller", "select", {
+        const resellers = await this.db.query("reseller", "select", {
             select: ["id", "name", "email", "companyName", "resellerType", "status", "address"],
             orderBy: { column: "id", order: "asc" },
         });
@@ -32,13 +29,13 @@ export class ResellerAppService extends DatabaseService {
             updatedAt: new Date(),
         };
 
-        const ids = (await this.queryWrite("reseller", "insert", { data: payload })) as unknown as number[];
+        const ids = (await this.db.queryWrite("reseller", "insert", { data: payload })) as unknown as number[];
         const id = ids[0];
         return { success: true, message: "Reseller created", reseller_id: id };
     }
 
     async UpdateReseller(data: Reseller) {
-        const updated = await this.queryWrite("reseller", "update", {
+        const updated = await this.db.queryWrite("reseller", "update", {
             where: { id: data.id },
             data: { ...data, updatedAt: new Date() },
         });
@@ -46,13 +43,13 @@ export class ResellerAppService extends DatabaseService {
     }
 
     async DeleteReseller(id: number) {
-        const deleted = await this.queryWrite("reseller", "delete", { where: { id } });
+        const deleted = await this.db.queryWrite("reseller", "delete", { where: { id } });
         return deleted ? { success: true, message: "Reseller deleted" } : { success: false, message: "Not found" };
     }
 
 
     async GetResellerById(id: number): Promise<Reseller | null> {
-        const resellers = await this.query("reseller", "select", {
+        const resellers = await this.db.query("reseller", "select", {
             where: { id }, limit: 1,
             select: ["id", "name", "email", "companyName", "resellerType", "status", "address", "createdAt", "updatedAt"],
         });

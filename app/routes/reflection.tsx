@@ -13,7 +13,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const { class_Name, class_Method_Name, } = await getUserPermission(request, app_type!, run_type!);
 
-  if (delete_id) {  // DELETE scenerio
+  if (delete_id) {  // DELETE scenario
     await ReflectionRegistry.executeReflectionEngine(class_Name, class_Method_Name, [Number(delete_id)]);
     return redirect("/reflection?app_type=RESELLER&run_type=GET_RESELLER");
   }
@@ -67,7 +67,6 @@ async function getUserPermission(request: Request, app_type: string, run_type: s
 
 export default function ResellersPage() {
   const { resellers } = useLoaderData<{ resellers: Reseller[] }>();
-
   const columns = [
     { key: "id", label: "ID" },
     { key: "name", label: "Name" },
@@ -76,6 +75,7 @@ export default function ResellersPage() {
     { key: "resellerType", label: "Type" },
     { key: "status", label: "Status" },
   ];
+
   return (
     <AppLayout>
       <ResellerTable initialData={resellers} columns={columns} />

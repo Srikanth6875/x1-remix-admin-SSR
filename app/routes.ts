@@ -12,6 +12,10 @@ export default [
     file: "routes/reflection.tsx",
   },
   {
+    path: "/clients",
+    file: "routes/clients.tsx",
+  },
+  {
     path: "/logout",
     file: "routes/logout.tsx",
   },

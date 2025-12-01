@@ -2,15 +2,14 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router";
 import { ResellerModal } from "./ResellerModal";
 import { ActionButtons } from "./ActionButtons";
-import type { Reseller } from "~/services/ResellerAppService.service";
 
 type ColumnDef = {
-  key: string;   // field in data
-  label: string; // header text
+  key: string;
+  label: string;
 };
 
 type Props = {
-  initialData: Reseller[];
+  initialData: any[];
   columns: ColumnDef[];
 };
 
@@ -54,7 +53,7 @@ export const ResellerTable = ({ initialData, columns }: Props) => {
   return (
     <div className="p-4 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-1">
-        <h1 className="text-xl font-bold text-gray-800">Resellers</h1>
+        <h1 className="text-xl font-bold text-gray-800">Resellers List</h1>
 
         <button
           onClick={openAddModal}
