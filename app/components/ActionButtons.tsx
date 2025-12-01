@@ -11,10 +11,7 @@ export const ActionButtons = ({ reseller, onEdit }: Props) => {
 
   const handleDelete = () => {
     if (!confirm("Delete this reseller permanently?")) return;
-
-    navigate(
-      `/reflection?app_type=RESELLER&run_type=DELETE_RESELLER&delete_id=${reseller.id}`
-    );
+    navigate(`/reflection?app_type=RESELLER&run_type=DELETE_RESELLER&delete_id=${reseller.id}`);
   };
 
   return (

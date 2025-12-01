@@ -31,7 +31,7 @@ export const ResellerModal = ({ reseller, onClose }: Props) => {
           name="run_type"
           value={reseller ? "UPDATE_RESELLER" : "ADD_RESELLER"}
         />
-        
+
         {reseller && <input type="hidden" name="id" value={reseller.id} />}
 
         <input
