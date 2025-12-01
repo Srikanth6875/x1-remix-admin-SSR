@@ -58,7 +58,7 @@ async function getUserPermission(request: Request, app_type: string, run_type: s
   const auth = new AuthService();
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const userId = session.get("userId");
-  
+
   // console.log("@@@@@@@@@@@@@", userId, app_type, run_type);
   const permission = await auth.checkUserPermission(userId, app_type, run_type);
   if (!permission) throw new Response("Forbidden", { status: 403 });
@@ -66,11 +66,19 @@ async function getUserPermission(request: Request, app_type: string, run_type: s
 }
 
 export default function ResellersPage() {
-  const { resellers } = useLoaderData() as { resellers: Reseller[] };
+  const { resellers } = useLoaderData<{ resellers: Reseller[] }>();
 
+  const columns = [
+    { key: "id", label: "ID" },
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "companyName", label: "Company" },
+    { key: "resellerType", label: "Type" },
+    { key: "status", label: "Status" },
+  ];
   return (
     <AppLayout>
-      <ResellerTable initialData={resellers} />
+      <ResellerTable initialData={resellers} columns={columns} />
     </AppLayout>
   );
 }
