@@ -12,8 +12,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { app_type, run_type, delete_id } = getParams(request, ["app_type", "run_type", "delete_id",]);
 
   const { class_Name, class_Method_Name, } = await getUserPermission(request, app_type!, run_type!);
-  // DELETE CASE
-  if (delete_id) {
+
+  if (delete_id) {  // DELETE scenerio
     await ReflectionRegistry.executeReflectionEngine(class_Name, class_Method_Name, [Number(delete_id)]);
     return redirect("/reflection?app_type=RESELLER&run_type=GET_RESELLER");
   }
@@ -49,7 +49,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 function getParams(request: Request, keys: string[]) {
   const url = new URL(request.url);
   const params: Record<string, string | null> = {};
-  keys.forEach(key => { params[key] = url.searchParams.get(key); });
+  keys.forEach(key => { params[key] = url.searchParams.get(key) });
+
   return params;
 }
 
@@ -57,7 +58,8 @@ async function getUserPermission(request: Request, app_type: string, run_type: s
   const auth = new AuthService();
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const userId = session.get("userId");
-
+  
+  // console.log("@@@@@@@@@@@@@", userId, app_type, run_type);
   const permission = await auth.checkUserPermission(userId, app_type, run_type);
   if (!permission) throw new Response("Forbidden", { status: 403 });
   return permission;
