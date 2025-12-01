@@ -14,8 +14,8 @@ const topNavItems = [
 ];
 
 const sidebarItems = [
-  { name: "All Clients", href: "/clients", icon: Home, search: { app_type: "CLIENTS", run_type: "GET_CLIENTS" } },
-  { name: "inActive reseller", href: "/inActivereseller", icon: Users, },
+  { name: "All Clients", href: "/clients-List", icon: Home, search: { app_type: "CLIENTS", run_type: "GET_CLIENTS" } },
+  { name: "inActive reseller", href: "/in-Active-reseller", icon: Users, search: { app_type: "RESELLER", run_type: "IN_ACTIVE_RESELLER" }  },
 ];
 
 const buildSearch = (search?: Record<string, string>) => search ? `?${new URLSearchParams(search).toString()}` : "";

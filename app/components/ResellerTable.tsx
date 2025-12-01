@@ -80,7 +80,7 @@ export const ResellerTable = ({ initialData }: Props) => {
                 <td className="px-4 py-3 text-sm">{r.id}</td>
                 <td className="px-4 py-3 text-sm font-medium">{r.name}</td>
                 <td className="px-4 py-3 text-sm text-gray-600">{r.email}</td>
-                <td className="px-4 py-3 text-sm">{r.companyName || "-"}</td>
+                <td className="px-4 py-3 text-sm">{r.companyName}</td>
                 <td className="px-4 py-3 text-sm">{r.resellerType}</td>
                 <td className="px-4 py-3 text-sm">
                   <span className={`px-2 py-1 text-xs rounded-full ${r.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}> {r.status}</span>
